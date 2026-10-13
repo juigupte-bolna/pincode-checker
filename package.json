@@ -1,0 +1,11 @@
+{
+  "name": "pincode-checker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serverless API that checks whether a customer pincode is within a set distance of the nearest branch.",
+  "scripts": {
+    "build-data": "node scripts/build-data.js",
+    "import-branches": "node scripts/import-branches.js",
+    "dev": "vercel dev"
+  }
+}
