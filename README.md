@@ -75,6 +75,43 @@ Add a custom function tool to your agent:
 
 The agent should speak the `result` field from the response.
 
+## 5. How it works (step by step)
+
+**If pincode found in public dataset:**
+
+1. Customer gives pincode
+2. Check public dataset (GeoNames-based, ~10,900 Indian pincodes + lat/long, bundled with this project)
+3. Pincode found → instantly get lat/long
+4. Use that lat/long for next steps
+
+**Backup path (pincode NOT in public dataset):**
+
+1. Pincode not found in public dataset
+2. Call Nominatim (free online lookup service)
+3. Nominatim searches and returns lat/long
+4. Use that lat/long for next steps
+5. If Nominatim also fails → no lat/long, mark "unknown pincode", stop here
+
+**Then, same for both paths:**
+
+6. Branches already have their own lat/long saved
+7. Use Haversine formula (math for distance) on customer lat/long + each branch lat/long
+8. Get distance (in km) to every single branch
+9. Pick the branch with the smallest distance
+10. Check: is that smallest distance under 60 km?
+11. Yes → "serviceable", tell customer which branch + distance
+12. No → "not serviceable"
+
+**Nominatim** is a free online service that looks up an address or pincode and gives back its lat/long. API used:
+
+```
+https://nominatim.openstreetmap.org/search?postalcode={pincode}&country=India&format=json&limit=1
+```
+
+It returns JSON with `lat` and `lon`.
+
+**Haversine** is a math formula that calculates straight-line distance between two lat/long points, accounting for the Earth being round.
+
 ## Accuracy notes
 
 - Distance is **straight-line (haversine)**, not road distance. Road
